@@ -21,7 +21,7 @@ export class MachineSaleSubscriber extends BaseMachineSubscriber {
       return;
     }
     if(event.getSoldQuantity() > machine.getStockLevel()){
-      console.error(`Slock lower than sold quantity.`);
+      console.error(`Machine Id ${event.machineId()} has slock lower than sold quantity (has ${machine.getStockLevel()}, need ${event.getSoldQuantity()}).`);
       return;
     }
     machine.setStockLevel(machine.getStockLevel() - event.getSoldQuantity());
@@ -31,7 +31,7 @@ export class MachineSaleSubscriber extends BaseMachineSubscriber {
         machine.getId()
       } sale with ${event.getSoldQuantity()} items. New stock: ${
         machine.getStockLevel()
-      }`
+      }\n`
     );
   }
 }

@@ -4,7 +4,6 @@ import { ISubscriber } from "../interface/ISubScriber";
 
 export class PublishSubscribeService implements IPublishSubscribeService {
   private subscribers: { [eventType: string]: ISubscriber[] } = {};
-  private intercrpotorSubscribers: { [eventType: string]: ISubscriber[] } = {};
 
   public subscribe(type: string, handler: ISubscriber): void {
     if (!this.subscribers[type]) {

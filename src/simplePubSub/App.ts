@@ -10,13 +10,14 @@ import { EventGeneratorUtil } from "../util/EventGeneratorUtil";
 
 // program
 (async () => {
-  //create vertual database for machine
+  // create the PubSub service
+  const pubSubService: IPublishSubscribeService = new PublishSubscribeService();
 
   // create 3 machines with a quantity of 10 stock
   const machines: Machine[] = [
-    new Machine("001", 10),
-    new Machine("002", 10),
-    new Machine("003", 10),
+    new Machine("001", 3, pubSubService),
+    new Machine("002", 3, pubSubService),
+    new Machine("003", 3, pubSubService),
   ];
 
   MachineRepository.bulkAddMachine(machines);
@@ -26,32 +27,28 @@ import { EventGeneratorUtil } from "../util/EventGeneratorUtil";
   const refillSubscriber = new MachineRefillSubscriber(machines);
   const stockLevelSubscriber = new MachineLowStockWarningSubScriber(machines);
 
-  // create the PubSub service
-  const pubSubService: IPublishSubscribeService = new PublishSubscribeService();
-
   // Subscribe to events
   pubSubService.subscribe("sale", saleSubscriber);
   pubSubService.subscribe("refill", refillSubscriber);
   pubSubService.subscribe("stockLevel", stockLevelSubscriber);
-  //todo: make stockLevel trigger everytime
   
-  // create 5 random events
-  const events: IEvent[] = [1, 2, 3, 4, 5].map((i) => EventGeneratorUtil.eventGenerator());
+  // create 10 random events
+  const events: IEvent[] = EventGeneratorUtil.generateRangeFrom0ToN(5).map((i) => EventGeneratorUtil.eventGenerator(3));
   
   // publish the events  
   events.forEach((event) => pubSubService.publish(event));
 
   console.info("========== End Event 1 ==========")
 
-  // // add new machine
-  // const newMachine :Machine = new Machine("004", 10);
-  // MachineRepository.addMachine(newMachine);
-  // saleSubscriber.addSubscriber(newMachine);
-  // pubSubService.subscribe("sale", saleSubscriber);
+  // add new machine
+  const newMachine :Machine = new Machine("004", 3, pubSubService);
+  MachineRepository.addMachine(newMachine);
+  saleSubscriber.addSubscriber(newMachine);
+  pubSubService.subscribe("sale", saleSubscriber);
   
-  // create 5 random events
-  pubSubService.unsubscribe("refill", refillSubscriber);
-  const events2: IEvent[] = [1, 2, 3, 4, 5].map((i) => EventGeneratorUtil.eventGenerator());
+  // create 10 random events
+  // pubSubService.unsubscribe("refill", refillSubscriber);
+  const events2: IEvent[] = EventGeneratorUtil.generateRangeFrom0ToN(5).map((i) => EventGeneratorUtil.eventGenerator(4));
   // publish the events  
   events2.forEach((event) => pubSubService.publish(event));
 })();

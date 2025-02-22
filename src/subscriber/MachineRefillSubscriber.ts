@@ -23,7 +23,7 @@ export class MachineRefillSubscriber extends BaseMachineSubscriber {
     machine.setStockLevel(machine.getStockLevel() + event.refillQuantity());
 
     console.log(
-      `Machine ${machine.getId()} refilled with ${event.refillQuantity()} items. New stock: ${machine.getStockLevel()}`
+      `Machine ${machine.getId()} refilled with ${event.refillQuantity()} items. New stock: ${machine.getStockLevel()}\n`
     );
   }
 }

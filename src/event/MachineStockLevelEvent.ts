@@ -1,8 +1,7 @@
 import { IEvent } from "../interface/IEvent";
 
-export class MachineStockOkEvent implements IEvent {
+export class MachineStockLevelEvent implements IEvent {
   constructor(
-    private readonly _stockTreshhold: number,
     private readonly _machineId: string
   ) {}
 
@@ -11,8 +10,5 @@ export class MachineStockOkEvent implements IEvent {
   }
   public machineId(): string {
     return this._machineId;
-  }
-  public getThreshold(): number {
-    return this._stockTreshhold;
   }
 }

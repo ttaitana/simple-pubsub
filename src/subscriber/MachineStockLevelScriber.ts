@@ -1,6 +1,6 @@
 import { Machine } from "../entity/Machine";
 import { MachineStatus } from "../entity/MachineStatus";
-import { MachineStockOkEvent } from "../event/MachineStockLevelEvent";
+import { MachineStockLevelEvent } from "../event/MachineStockLevelEvent";
 import { ISubscriber } from "../interface/ISubScriber";
 import { MachineRepository } from "../repository/MachineRepository";
 
@@ -51,7 +51,7 @@ export class MachineLowStockWarningSubScriber implements ISubscriber {
     return this.mahcineStatus.find((m) => m.getMachineId() === machineId);
   }
 
-  handle(event: MachineStockOkEvent): void {
+  handle(event: MachineStockLevelEvent): void {
     const machineStatus: MachineStatus | undefined = this.getMachineStatus(
       event.machineId()
     );
@@ -70,11 +70,13 @@ export class MachineLowStockWarningSubScriber implements ISubscriber {
 
     if (currentStock >= this.STOCK_THRESHOLD) {
         if(machineStatus.getCurrentStatus() !== this.STOCK_OK || !machineStatus){
+            console.warn(`Machine Id ${event.machineId()} stock level is OK`);
             machineStatus.setCurrentStatus(this.STOCK_OK);
             machineStatus.setIsTrigger(true);
         }
     }else{
         if(machineStatus.getCurrentStatus() !== this.STOCK_LOW || !machineStatus){
+            console.warn(`Machine Id ${event.machineId()} stock level is LOW`);
             machineStatus.setCurrentStatus(this.STOCK_LOW);
             machineStatus.setIsTrigger(true);
         }
