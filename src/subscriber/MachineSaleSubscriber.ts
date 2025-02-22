@@ -5,17 +5,17 @@ import { BaseMachineSubscriber } from "./BaseMachineSubscriber";
 
 export class MachineSaleSubscriber extends BaseMachineSubscriber {
 
-  constructor(machines: Machine[]) {
-    super(machines);
+  constructor(machineRepository: MachineRepository, machines: Machine[]) {
+    super(machineRepository, machines);
   }
 
   handle(event: MachineSaleEvent): void {
     if (!this.isMachineIdValid(event.machineId())) {
-      console.error(`Invalid Machine Id ${event.machineId()}`);
+      console.error(`Machine Id ${event.machineId()} not subscribe to sale event.`);
       return;
     }
 
-    const machine = MachineRepository.findMachineById(event.machineId());
+    const machine = this.machineRepository.findMachineById(event.machineId());
     if (!machine) {
       console.error(`Invalid Machine Id ${event.machineId()}`);
       return;

@@ -1,13 +1,13 @@
 import { Machine } from "../entity/Machine";
 
 export class MachineRepository {
-  private static machines: Machine[] = new Array<Machine>();
+  private machines: Machine[] = new Array<Machine>();
 
-  public static findMachineById(id?: string): Machine | undefined {
+  public findMachineById(id?: string): Machine | undefined {
     return this.machines.find((m: Machine) => m.getId() === id);
   }
 
-  public static addMachine(machine: Machine): boolean {
+  public addMachine(machine: Machine): boolean {
     if (!this.findMachineById(machine.getId())) {
       this.machines.push(machine);
       return true;
@@ -15,7 +15,7 @@ export class MachineRepository {
     return false;
   }
 
-  public static bulkAddMachine(machines: Machine[]): boolean {
+  public bulkAddMachine(machines: Machine[]): boolean {
     let result: boolean = true;
     for (const machine of machines) {
       if (!this.addMachine(machine)) {

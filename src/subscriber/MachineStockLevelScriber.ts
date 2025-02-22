@@ -10,8 +10,10 @@ export class MachineLowStockWarningSubScriber implements ISubscriber {
   private STOCK_THRESHOLD: number = 3;
 
   private mahcineStatus: MachineStatus[];
+  protected machineRepository: MachineRepository;
 
-  constructor(machines: Machine[]) {
+  constructor(machineRepository: MachineRepository, machines: Machine[]) {
+    this.machineRepository = machineRepository;
     this.mahcineStatus = machines.map((m) => {
       return new MachineStatus(
         m.getId(),
@@ -23,7 +25,7 @@ export class MachineLowStockWarningSubScriber implements ISubscriber {
     });
   }
 
-  addSubscriber(machine: Machine): void {
+  public addSubscriber(machine: Machine): void {
     if (this.findmachineId(machine.getId())) {
       console.error(`Machine Id ${machine.getId()} already subscribe.`);
       return;
@@ -37,6 +39,15 @@ export class MachineLowStockWarningSubScriber implements ISubscriber {
         false
       )
     );
+  }
+
+  public removeSubscriber(machine: Machine): void {
+    const index = this.mahcineStatus.findIndex((m) => m.getMachineId() === machine.getId());
+    if (index === -1) {
+      console.error(`Machine Id ${machine.getId()} not found.`);
+      return;
+    }
+    this.mahcineStatus.splice(index, 1);
   }
 
   private getMachineStatus(machineId: string): MachineStatus | undefined {
@@ -56,11 +67,11 @@ export class MachineLowStockWarningSubScriber implements ISubscriber {
       event.machineId()
     );
     if (!machineStatus) {
-      console.error(`Invalid Machine Id ${event.machineId()}`);
+      console.error(`Machine Id ${event.machineId()} not subscribe to stock level event.`);
       return;
     }
 
-    const machine = MachineRepository.findMachineById(event.machineId());
+    const machine = this.machineRepository.findMachineById(event.machineId());
     if (!machine) {
       console.error(`Invalid Machine Id ${event.machineId()}`);
       return;

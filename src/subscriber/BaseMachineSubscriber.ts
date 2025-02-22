@@ -1,12 +1,14 @@
 import { Machine } from "../entity/Machine";
-import { MachineRefillEvent } from "../event/MachineRefillEvent";
 import { IEvent } from "../interface/IEvent";
 import { ISubscriber } from "../interface/ISubScriber";
+import { MachineRepository } from "../repository/MachineRepository";
 
 export abstract class BaseMachineSubscriber implements ISubscriber {
   protected machinesId: string[];
+  protected machineRepository: MachineRepository;
 
-  constructor(machines: Machine[]) {
+  constructor(machineRepository: MachineRepository, machines: Machine[]) {
+    this.machineRepository = machineRepository;
     this.machinesId = machines.map((m) => m.getId());
   }
 
@@ -16,6 +18,15 @@ export abstract class BaseMachineSubscriber implements ISubscriber {
       return;
     }
     this.machinesId.push(machine.getId());
+  }
+
+  public removeSubscriber(machine: Machine): void {
+    const index = this.machinesId.findIndex((m) => m === machine.getId());
+    if (index === -1) {
+      console.error(`Machine Id ${machine.getId()} not found.`);
+      return;
+    }
+    this.machinesId.splice(index, 1);
   }
 
   protected findmachineId(machineId: String): string| undefined {
